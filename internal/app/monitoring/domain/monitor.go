@@ -6,55 +6,57 @@ import (
 	"time"
 )
 
-// RuntimeStats contains comprehensive runtime statistics
-type RuntimeStats struct {
-	NumGoroutine   int           `json:"num_goroutine"`
-	NumCPU         int           `json:"num_cpu"`
-	MemoryStats    MemoryStats   `json:"memory_stats"`
-	GCStats        GCStats       `json:"gc_stats"`
-	SchedulerStats SchedulerInfo `json:"scheduler_stats"`
-	Timestamp      time.Time     `json:"timestamp"`
-}
+type (
+	RuntimeStats struct {
+		NumGoroutine   int           `json:"num_goroutine"`
+		NumCPU         int           `json:"num_cpu"`
+		MemoryStats    MemoryStats   `json:"memory_stats"`
+		GCStats        GCStats       `json:"gc_stats"`
+		SchedulerStats SchedulerInfo `json:"scheduler_stats"`
+		Timestamp      time.Time     `json:"timestamp"`
+	}
 
-// MemoryStats contains memory-related metrics
-type MemoryStats struct {
-	AllocMB        uint64 `json:"alloc_mb"`
-	TotalAllocMB   uint64 `json:"total_alloc_mb"`
-	SysMB          uint64 `json:"sys_mb"`
-	NumGC          uint32 `json:"num_gc"`
-	HeapAllocMB    uint64 `json:"heap_alloc_mb"`
-	HeapObjects    uint64 `json:"heap_objects"`
-	HeapIdleMB     uint64 `json:"heap_idle_mb"`
-	HeapInUseMB    uint64 `json:"heap_in_use_mb"`
-	HeapReleasedMB uint64 `json:"heap_released_mb"`
-}
+	MemoryStats struct {
+		AllocMB        uint64 `json:"alloc_mb"`
+		TotalAllocMB   uint64 `json:"total_alloc_mb"`
+		SysMB          uint64 `json:"sys_mb"`
+		NumGC          uint32 `json:"num_gc"`
+		HeapAllocMB    uint64 `json:"heap_alloc_mb"`
+		HeapObjects    uint64 `json:"heap_objects"`
+		HeapIdleMB     uint64 `json:"heap_idle_mb"`
+		HeapInUseMB    uint64 `json:"heap_in_use_mb"`
+		HeapReleasedMB uint64 `json:"heap_released_mb"`
+	}
 
-// GCStats contains garbage collector metrics
-type GCStats struct {
-	LastGC        string  `json:"last_gc"`
-	NextGCMB      uint64  `json:"next_gc_mb"`
-	PauseTotal    string  `json:"pause_total"`
-	NumForcedGC   uint32  `json:"num_forced_gc"`
-	GCCPUFraction float64 `json:"gc_cpu_fraction"`
-}
+	GCStats struct {
+		LastGC        string  `json:"last_gc"`
+		NextGCMB      uint64  `json:"next_gc_mb"`
+		PauseTotal    string  `json:"pause_total"`
+		NumForcedGC   uint32  `json:"num_forced_gc"`
+		GCCPUFraction float64 `json:"gc_cpu_fraction"`
+	}
 
-// SchedulerInfo contains scheduler-specific metrics
-type SchedulerInfo struct {
-	NumProcs      int   `json:"num_procs"`      // Number of Ps (GOMAXPROCS)
-	NumGoroutines int   `json:"num_goroutines"` // Active goroutines
-	NumCgoCall    int64 `json:"num_cgo_call"`   // Number of cgo calls
-}
+	SchedulerInfo struct {
+		NumProcs      int   `json:"num_procs"`
+		NumGoroutines int   `json:"num_goroutines"`
+		NumCgoCall    int64 `json:"num_cgo_call"`
+	}
 
-// Monitor provides runtime monitoring capabilities
-type Monitor struct{}
+	GCResult struct {
+		GCRunsBefore  uint32  `json:"gc_runs_before"`
+		GCRunsAfter   uint32  `json:"gc_runs_after"`
+		MemoryFreedMB float64 `json:"memory_freed_mb"`
+		AllocBeforeMB float64 `json:"alloc_before_mb"`
+		AllocAfterMB  float64 `json:"alloc_after_mb"`
+	}
 
-// NewMonitor creates a new monitor instance
+	Monitor struct{}
+)
+
 func NewMonitor() *Monitor {
 	return &Monitor{}
 }
 
-// GetRuntimeStats collects comprehensive runtime statistics
-// Demonstrates observation of scheduler and GC behavior
 func (m *Monitor) RuntimeStats() RuntimeStats {
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
@@ -92,8 +94,6 @@ func (m *Monitor) RuntimeStats() RuntimeStats {
 	}
 }
 
-// ForceGC forces a garbage collection cycle
-// Returns before/after metrics to observe GC impact
 func (m *Monitor) ForceGC() GCResult {
 	var before, after runtime.MemStats
 
@@ -108,13 +108,4 @@ func (m *Monitor) ForceGC() GCResult {
 		AllocBeforeMB: float64(before.Alloc) / 1024 / 1024,
 		AllocAfterMB:  float64(after.Alloc) / 1024 / 1024,
 	}
-}
-
-// GCResult contains garbage collection operation results
-type GCResult struct {
-	GCRunsBefore  uint32  `json:"gc_runs_before"`
-	GCRunsAfter   uint32  `json:"gc_runs_after"`
-	MemoryFreedMB float64 `json:"memory_freed_mb"`
-	AllocBeforeMB float64 `json:"alloc_before_mb"`
-	AllocAfterMB  float64 `json:"alloc_after_mb"`
 }

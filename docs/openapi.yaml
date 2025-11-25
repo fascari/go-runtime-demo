@@ -1,0 +1,344 @@
+openapi: 3.0.3
+info:
+  title: Go Runtime Demo API
+  description: API demonstrating Go runtime scheduler behavior through blockchain operations
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /stats:
+    get:
+      summary: Get runtime statistics
+      description: Returns current Go runtime statistics including goroutines, memory usage, and GC metrics
+      operationId: getStats
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuntimeStats'
+
+  /blocks:
+    get:
+      summary: List all blocks
+      description: Returns all blocks in the blockchain
+      operationId: listBlocks
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Block'
+
+    post:
+      summary: Add a block
+      description: Adds a single block to the blockchain using proof-of-work mining
+      operationId: addBlock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: string
+                  description: Block content
+                  example: "My block data"
+      responses:
+        '201':
+          description: Block created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /mine:
+    post:
+      summary: Mine blocks in parallel
+      description: Mines multiple blocks in parallel using specified number of goroutines
+      operationId: mineParallel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - goroutines
+              properties:
+                data:
+                  type: string
+                  description: Base data for blocks
+                  example: "Parallel mining test"
+                goroutines:
+                  type: integer
+                  description: Number of goroutines to use for mining
+                  minimum: 1
+                  example: 4
+      responses:
+        '200':
+          description: Mining completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MineResult'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /stress:
+    post:
+      summary: Run stress test
+      description: Runs a stress test creating goroutines and allocating memory to observe scheduler behavior
+      operationId: stressTest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                allocations:
+                  type: integer
+                  description: Number of memory allocations per goroutine
+                  minimum: 1
+                  default: 10
+                  example: 50
+                goroutines:
+                  type: integer
+                  description: Number of goroutines to spawn
+                  minimum: 1
+                  default: 1
+                  example: 5
+      responses:
+        '200':
+          description: Stress test completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StressTestResult'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Block:
+      type: object
+      properties:
+        index:
+          type: integer
+          description: Block index in the chain
+          example: 1
+        timestamp:
+          type: string
+          format: date-time
+          description: Block creation timestamp
+          example: "2025-11-25T10:00:00Z"
+        data:
+          type: string
+          description: Block content
+          example: "Block data"
+        previous_hash:
+          type: string
+          description: Hash of the previous block
+          example: "000abc123..."
+        hash:
+          type: string
+          description: Current block hash
+          example: "000def456..."
+        nonce:
+          type: integer
+          description: Proof-of-work nonce
+          example: 12345
+
+    RuntimeStats:
+      type: object
+      properties:
+        num_goroutine:
+          type: integer
+          description: Number of currently running goroutines
+          example: 5
+        num_cpu:
+          type: integer
+          description: Number of logical CPU cores
+          example: 8
+        memory_stats:
+          $ref: '#/components/schemas/MemoryStats'
+        gc_stats:
+          $ref: '#/components/schemas/GCStats'
+        scheduler_stats:
+          $ref: '#/components/schemas/SchedulerStats'
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-11-25T10:00:00Z"
+
+    MemoryStats:
+      type: object
+      properties:
+        alloc_mb:
+          type: integer
+          description: Currently allocated memory in MB
+          example: 2
+        total_alloc_mb:
+          type: integer
+          description: Cumulative allocated memory in MB
+          example: 10
+        sys_mb:
+          type: integer
+          description: Total memory obtained from OS in MB
+          example: 15
+        num_gc:
+          type: integer
+          description: Number of completed GC cycles
+          example: 3
+        heap_alloc_mb:
+          type: integer
+          description: Heap allocated memory in MB
+          example: 2
+        heap_objects:
+          type: integer
+          description: Number of allocated heap objects
+          example: 1234
+        heap_idle_mb:
+          type: integer
+          description: Idle heap memory in MB
+          example: 5
+        heap_in_use_mb:
+          type: integer
+          description: Heap memory in use in MB
+          example: 3
+        heap_released_mb:
+          type: integer
+          description: Heap memory released to OS in MB
+          example: 2
+
+    GCStats:
+      type: object
+      properties:
+        last_gc:
+          type: string
+          format: date-time
+          description: Timestamp of last GC cycle
+          example: "2025-11-25T10:00:00Z"
+        next_gc_mb:
+          type: integer
+          description: Target heap size for next GC in MB
+          example: 4
+        pause_total:
+          type: string
+          description: Cumulative GC pause time
+          example: "100ms"
+        num_forced_gc:
+          type: integer
+          description: Number of forced GC cycles
+          example: 0
+        gc_cpu_fraction:
+          type: number
+          format: double
+          description: Fraction of CPU time used by GC
+          example: 0.001
+
+    SchedulerStats:
+      type: object
+      properties:
+        num_procs:
+          type: integer
+          description: GOMAXPROCS value
+          example: 8
+        num_goroutines:
+          type: integer
+          description: Number of goroutines
+          example: 5
+        num_cgo_call:
+          type: integer
+          format: int64
+          description: Number of cgo calls
+          example: 0
+
+    MineResult:
+      type: object
+      properties:
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+          description: Array of mined blocks
+        duration:
+          type: string
+          description: Time taken to mine all blocks
+          example: "2.5s"
+        goroutines:
+          type: integer
+          description: Number of goroutines used
+          example: 4
+        total_blocks:
+          type: integer
+          description: Total blocks in the chain after mining
+          example: 10
+
+    StressTestResult:
+      type: object
+      properties:
+        duration:
+          type: string
+          description: Test execution duration
+          example: "1.2s"
+        goroutines:
+          type: integer
+          description: Number of goroutines spawned
+          example: 5
+        allocations:
+          type: integer
+          description: Number of allocations per goroutine
+          example: 50
+        gc_collections:
+          type: integer
+          description: Number of GC cycles triggered during test
+          example: 2
+        memory_delta_mb:
+          type: number
+          format: double
+          description: Memory change during test in MB
+          example: 245.5
+        final_alloc_mb:
+          type: number
+          format: double
+          description: Final allocated memory in MB
+          example: 250.2
+        num_goroutines:
+          type: integer
+          description: Number of goroutines after cleanup
+          example: 1
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "missing value"
+

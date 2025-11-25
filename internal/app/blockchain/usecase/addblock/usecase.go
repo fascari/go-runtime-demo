@@ -16,6 +16,6 @@ func New(blockchain *domain.Blockchain) UseCase {
 	}
 }
 
-func (uc UseCase) Execute(ctx context.Context, data string) domain.Block {
+func (uc UseCase) Execute(_ context.Context, data string) domain.Block {
 	return uc.blockchain.AddBlock(data)
 }

@@ -28,25 +28,21 @@ func main() {
 
 	printSchedulerInfo()
 
-	// Initialize domain objects
 	blockchain := blockchaindomain.NewBlockchain(4)
 	monitor := monitoringdomain.NewMonitor()
 
-	// Initialize use cases
 	addBlockUC := addblockusecase.New(blockchain)
 	listBlocksUC := listblocksusecase.New(blockchain)
 	mineParallelUC := mineparallelusecase.New(blockchain)
 	stressTestUC := stresstestusecase.New()
 	statsUC := statsusecase.New(monitor)
 
-	// Initialize handlers
 	addBlockHandler := addblockhandler.NewHandler(addBlockUC)
 	listBlocksHandler := listblockshandler.NewHandler(listBlocksUC)
 	mineParallelHandler := mineparallelhandler.NewHandler(mineParallelUC)
 	stressTestHandler := stresstesthandler.NewHandler(stressTestUC)
 	statsHandler := statshandler.NewHandler(statsUC)
 
-	// Setup server and register endpoints
 	server := httpserver.NewServer("8080")
 	router := server.Router()
 
@@ -56,7 +52,6 @@ func main() {
 	stresstesthandler.RegisterEndpoint(router, stressTestHandler)
 	statshandler.RegisterEndpoint(router, statsHandler)
 
-	// Start server
 	if err := server.Start(); err != nil {
 		log.Fatal(err)
 	}

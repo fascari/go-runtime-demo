@@ -1,0 +1,77 @@
+version: "2"
+
+run:
+  allow-parallel-runners: true
+  allow-serial-runners: true
+
+output:
+  formats:
+    text:
+      path: stdout
+
+linters:
+  enable:
+    - revive
+    - staticcheck
+    - decorder
+    - gocyclo
+    - goconst
+    - misspell
+    - unparam
+    - unconvert
+    - nakedret
+    - bodyclose
+  settings:
+    decorder:
+      dec-order:
+        - const
+        - var
+        - type
+        - func
+      exclude-files:
+        - '**/*_test.go'
+      ignore-underscore-vars: false
+      disable-dec-num-check: false
+      disable-type-dec-num-check: false
+      disable-const-dec-num-check: false
+      disable-var-dec-num-check: false
+      disable-dec-order-check: false
+      disable-init-func-first-check: false
+    revive:
+      severity: error
+      rules:
+        - name: exported
+          disabled: true
+        - name: argument-limit
+          arguments:
+            - 10
+        - name: function-result-limit
+          arguments:
+            - 3
+        - name: function-length
+        - name: cognitive-complexity
+          arguments:
+            - 15
+        - name: cyclomatic
+          arguments:
+            - 15
+    staticcheck:
+      checks:
+        - ST1005
+  exclusions:
+    generated: lax
+    paths:
+      - mocks
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - mocks
+      - third_party$
+      - builtin$
+      - examples$

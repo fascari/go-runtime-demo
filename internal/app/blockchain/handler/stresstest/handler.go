@@ -15,11 +15,6 @@ type Handler struct {
 	useCase stresstest.UseCase
 }
 
-type InputPayload struct {
-	Allocations int `json:"allocations"`
-	Goroutines  int `json:"goroutines"`
-}
-
 func NewHandler(useCase stresstest.UseCase) Handler {
 	return Handler{useCase: useCase}
 }

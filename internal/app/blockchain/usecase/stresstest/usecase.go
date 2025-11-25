@@ -9,23 +9,25 @@ import (
 	"time"
 )
 
-type UseCase struct{}
+type (
+	UseCase struct{}
 
-type Result struct {
-	Duration      string  `json:"duration"`
-	Goroutines    int     `json:"goroutines"`
-	Allocations   int     `json:"allocations"`
-	GCCollections uint32  `json:"gc_collections"`
-	MemoryDeltaMB float64 `json:"memory_delta_mb"`
-	FinalAllocMB  float64 `json:"final_alloc_mb"`
-	NumGoroutines int     `json:"num_goroutines"`
-}
+	Result struct {
+		Duration      string  `json:"duration"`
+		Goroutines    int     `json:"goroutines"`
+		Allocations   int     `json:"allocations"`
+		GCCollections uint32  `json:"gc_collections"`
+		MemoryDeltaMB float64 `json:"memory_delta_mb"`
+		FinalAllocMB  float64 `json:"final_alloc_mb"`
+		NumGoroutines int     `json:"num_goroutines"`
+	}
+)
 
 func New() UseCase {
 	return UseCase{}
 }
 
-func (uc UseCase) Execute(ctx context.Context, allocations, goroutines int) Result {
+func (uc UseCase) Execute(_ context.Context, allocations, goroutines int) Result {
 	start := time.Now()
 
 	var memBefore, memAfter runtime.MemStats
@@ -67,4 +69,3 @@ func (uc UseCase) Execute(ctx context.Context, allocations, goroutines int) Resu
 		NumGoroutines: runtime.NumGoroutine(),
 	}
 }
-

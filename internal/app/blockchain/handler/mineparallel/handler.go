@@ -15,11 +15,6 @@ type Handler struct {
 	useCase mineparallel.UseCase
 }
 
-type InputPayload struct {
-	Data       string `json:"data"`
-	Goroutines int    `json:"goroutines"`
-}
-
 func NewHandler(useCase mineparallel.UseCase) Handler {
 	return Handler{useCase: useCase}
 }

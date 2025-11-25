@@ -32,17 +32,13 @@ go run ./cmd/api
 
 Server starts on `http://localhost:8080`
 
-## API Endpoints
+## Documentation
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/blocks` | List all blocks in the chain |
-| POST | `/blocks` | Add a single block |
-| POST | `/mine` | Mine blocks using multiple goroutines |
-| POST | `/stress` | Run stress test to observe scheduler behavior |
-| GET | `/stats` | Get real-time runtime and scheduler statistics |
+📚 **API Guide**: [docs/GUIDE.md](./docs/GUIDE.md) - Complete API documentation with scheduler behavior explanations
 
-### Examples
+📖 **OpenAPI Spec**: [docs/openapi.yaml](./docs/openapi.yaml) - OpenAPI 3.0 specification for all endpoints
+
+## Example Usage
 
 **Add a block:**
 ```bash
@@ -65,8 +61,8 @@ curl http://localhost:8080/stats | jq .
 
 ## Related Article
 
-For an in-depth explanation of Go's scheduler, check out the accompanying article:
-- [Understanding Go's Scheduler](./ARTICLE_SCHEDULER_EN.md)
+For an in-depth explanation of Go's scheduler, read the full article on Medium:
+- **[Understanding Go's Scheduler: How Goroutine Management Works](https://medium.com/@felipe.ascari_49171/understanding-gos-scheduler-how-goroutine-management-works-65131986ee2c)**
 
 Topics covered: G-M-P model, work-stealing algorithm, goroutine states, preemption, and practical code examples.
 

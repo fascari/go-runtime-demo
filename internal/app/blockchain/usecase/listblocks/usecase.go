@@ -16,6 +16,6 @@ func New(blockchain *domain.Blockchain) UseCase {
 	}
 }
 
-func (uc UseCase) Execute(ctx context.Context) []domain.Block {
+func (uc UseCase) Execute(_ context.Context) []domain.Block {
 	return uc.blockchain.Chain()
 }

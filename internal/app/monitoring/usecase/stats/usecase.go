@@ -3,7 +3,7 @@ package stats
 import (
 	"context"
 
-"go-runtime-demo/internal/app/monitoring/domain"
+	"go-runtime-demo/internal/app/monitoring/domain"
 )
 
 type UseCase struct {
@@ -16,6 +16,6 @@ func New(monitor *domain.Monitor) UseCase {
 	}
 }
 
-func (uc UseCase) Execute(ctx context.Context) domain.RuntimeStats {
+func (uc UseCase) Execute(_ context.Context) domain.RuntimeStats {
 	return uc.monitor.RuntimeStats()
 }

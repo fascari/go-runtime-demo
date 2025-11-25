@@ -15,10 +15,6 @@ type Handler struct {
 	useCase addblock.UseCase
 }
 
-type InputPayload struct {
-	Data string `json:"data"`
-}
-
 func NewHandler(useCase addblock.UseCase) Handler {
 	return Handler{useCase: useCase}
 }
