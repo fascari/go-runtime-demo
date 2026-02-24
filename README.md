@@ -150,7 +150,7 @@ GOGC=200 go run ./cmd/api &
 
 - **[Understanding Go's Scheduler: How Goroutine Management Works](https://medium.com/@felipe.ascari_49171/understanding-gos-scheduler-how-goroutine-management-works-65131986ee2c)** - G-M-P model, work-stealing algorithm, goroutine states, preemption
 
-- **Green Tea: Understanding Go's Garbage Collector** - GC evolution, runtime/metrics, allocation patterns, profiling ([article.md](./article.md))
+- **[Green Tea: Understanding Go's Garbage Collector](https://medium.com/@felipe.ascari_49171/green-tea-understanding-gos-garbage-collector-21cc1bc08725)** - GC evolution, runtime/metrics, allocation patterns, profiling
 
 Topics covered: G-M-P model, work-stealing algorithm, goroutine states, preemption, GC internals, and practical code examples.
 
