@@ -1,21 +1,21 @@
-package addblock
+package gcfinalizers
 
 import (
 	"net/http"
 
-	"go-runtime-demo/internal/app/blockchain/usecase/addblock"
+	"go-runtime-demo/internal/app/monitoring/usecase/gcfinalizers"
 	httpjson "go-runtime-demo/pkg/http"
 
 	"github.com/gorilla/mux"
 )
 
-const Path = "/blocks"
+const Path = "/gc/finalizers"
 
 type Handler struct {
-	useCase addblock.UseCase
+	useCase gcfinalizers.UseCase
 }
 
-func NewHandler(useCase addblock.UseCase) Handler {
+func NewHandler(useCase gcfinalizers.UseCase) Handler {
 	return Handler{useCase: useCase}
 }
 
@@ -30,11 +30,15 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payload.Data == "" {
-		httpjson.WriteError(w, http.StatusBadRequest, httpjson.ErrMissingValue)
-		return
+	if payload.Count <= 0 {
+		payload.Count = 100
 	}
 
-	result := h.useCase.Execute(r.Context(), payload.Data)
-	httpjson.WriteJSON(w, http.StatusCreated, result)
+	input := gcfinalizers.Input{
+		Count:     payload.Count,
+		TriggerGC: payload.TriggerGC,
+	}
+
+	result := h.useCase.Execute(r.Context(), input)
+	httpjson.WriteJSON(w, http.StatusOK, result)
 }

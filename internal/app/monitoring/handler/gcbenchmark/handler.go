@@ -1,21 +1,21 @@
-package stresstest
+package gcbenchmark
 
 import (
 	"net/http"
 
-	"go-runtime-demo/internal/app/blockchain/usecase/stresstest"
+	"go-runtime-demo/internal/app/monitoring/usecase/gcbenchmark"
 	httpjson "go-runtime-demo/pkg/http"
 
 	"github.com/gorilla/mux"
 )
 
-const Path = "/stress"
+const Path = "/gc/benchmark"
 
 type Handler struct {
-	useCase stresstest.UseCase
+	useCase gcbenchmark.UseCase
 }
 
-func NewHandler(useCase stresstest.UseCase) Handler {
+func NewHandler(useCase gcbenchmark.UseCase) Handler {
 	return Handler{useCase: useCase}
 }
 
@@ -30,23 +30,29 @@ func (h Handler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Set defaults
 	if payload.Allocations <= 0 {
-		payload.Allocations = 10
+		payload.Allocations = 10000
+	}
+	if payload.SizeKB <= 0 {
+		payload.SizeKB = 1
 	}
 
-	if payload.Goroutines <= 0 {
-		payload.Goroutines = 1
-	}
-
-	// Default to short-lived pattern if not specified
-	pattern := stresstest.PatternShortLived
+	// Parse pattern
+	pattern := gcbenchmark.PatternShortLived
 	switch payload.Pattern {
 	case "long-lived":
-		pattern = stresstest.PatternLongLived
+		pattern = gcbenchmark.PatternLongLived
 	case "mixed":
-		pattern = stresstest.PatternMixed
+		pattern = gcbenchmark.PatternMixed
 	}
 
-	result := h.useCase.Execute(r.Context(), payload.Allocations, payload.Goroutines, pattern)
+	input := gcbenchmark.Input{
+		Allocations: payload.Allocations,
+		SizeKB:      payload.SizeKB,
+		Pattern:     pattern,
+	}
+
+	result := h.useCase.Execute(r.Context(), input)
 	httpjson.WriteJSON(w, http.StatusOK, result)
 }
